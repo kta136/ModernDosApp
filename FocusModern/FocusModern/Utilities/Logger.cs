@@ -19,10 +19,9 @@ namespace FocusModern.Utilities
         {
             try
             {
-                string logDir = Path.Combine(
-                    Environment.ExpandEnvironmentVariables(
-                        ConfigurationManager.AppSettings["DatabasePath"]), 
-                    "Logs");
+                // Get database path with fallback
+                string databasePath = GetDatabasePath();
+                string logDir = Path.Combine(databasePath, "Logs");
                 
                 Directory.CreateDirectory(logDir);
                 
@@ -37,8 +36,33 @@ namespace FocusModern.Utilities
                 string tempDir = Path.GetTempPath();
                 logFilePath = Path.Combine(tempDir, $"focus_modern_{DateTime.Now:yyyyMMdd}.log");
                 
-                Error($"Logger initialization failed, using temp directory: {ex.Message}");
+                // Try to write the error using the basic WriteLog method
+                WriteLog("ERROR", $"Logger initialization failed, using temp directory: {ex.Message}");
             }
+        }
+
+        /// <summary>
+        /// Get database path with proper fallback handling
+        /// </summary>
+        private static string GetDatabasePath()
+        {
+            try
+            {
+                // Try to get from config first
+                string configPath = ConfigurationManager.AppSettings?["DatabasePath"];
+                if (!string.IsNullOrEmpty(configPath))
+                {
+                    return Environment.ExpandEnvironmentVariables(configPath);
+                }
+            }
+            catch
+            {
+                // Configuration manager failed, use fallback
+            }
+
+            // Fallback to default path
+            string localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            return Path.Combine(localAppData, "FocusModern");
         }
 
         /// <summary>

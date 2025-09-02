@@ -21,8 +21,22 @@ namespace FocusModern.Data
             branchConnections = new Dictionary<int, SQLiteConnection>();
             
             // Get database path from config, expand environment variables
-            string configPath = ConfigurationManager.AppSettings["DatabasePath"];
-            databaseBasePath = Environment.ExpandEnvironmentVariables(configPath);
+            string configPath = ConfigurationManager.AppSettings["DatabasePath"] ?? "Data";
+            string expanded = Environment.ExpandEnvironmentVariables(configPath);
+            // If relative, resolve against current working directory
+            if (!Path.IsPathRooted(expanded))
+            {
+                try
+                {
+                    expanded = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), expanded));
+                }
+                catch
+                {
+                    // Fallback to app base directory
+                    expanded = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, expanded));
+                }
+            }
+            databaseBasePath = expanded;
             
             // Ensure directory exists
             Directory.CreateDirectory(databaseBasePath);
@@ -57,6 +71,8 @@ namespace FocusModern.Data
 
             if (isNewDatabase)
             {
+                // Attempt to migrate from previous LocalAppData location if present
+                TryMigrateFromLocalAppData(dbPath);
                 CreateDatabaseSchema(branchNumber);
                 Logger.Info(string.Format("Created new database for Branch {0}", branchNumber));
             }
@@ -89,6 +105,30 @@ namespace FocusModern.Data
         private string GetDatabasePath(int branchNumber)
         {
             return Path.Combine(databaseBasePath, string.Format("focus_branch{0}.db", branchNumber));
+        }
+
+        /// <summary>
+        /// If the new target db file does not exist, but an older db exists in %LocalAppData%\FocusModern, copy it over.
+        /// </summary>
+        private void TryMigrateFromLocalAppData(string targetDbPath)
+        {
+            try
+            {
+                if (File.Exists(targetDbPath)) return;
+                string oldBase = Environment.ExpandEnvironmentVariables("%LocalAppData%\\FocusModern\\");
+                string fileName = Path.GetFileName(targetDbPath);
+                string oldPath = Path.Combine(oldBase, fileName);
+                if (File.Exists(oldPath))
+                {
+                    Directory.CreateDirectory(Path.GetDirectoryName(targetDbPath) ?? databaseBasePath);
+                    File.Copy(oldPath, targetDbPath, overwrite: false);
+                    Logger.Info($"Migrated existing database from {oldPath} to {targetDbPath}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Database migration from LocalAppData failed: {ex.Message}");
+            }
         }
 
         /// <summary>

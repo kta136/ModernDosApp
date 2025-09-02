@@ -47,7 +47,11 @@
       "Bash(.TestDbfReader.exe:*)",
       "Bash(dotnet run:*)",
       "Bash(dotnet publish:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git push:*)",
+      "Bash(gh release create:*)",
+      "Bash(gh release:*)",
+      "Bash(.FocusModern.exe)"
     ],
     "deny": [],
     "ask": []

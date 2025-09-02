@@ -21,13 +21,29 @@ dotnet run
 ```
 
 ## Data & Storage
-- Legacy data should be placed under `Old/` (excluded from Git).
-- App databases are created under `%LocalAppData%\FocusModern\` as `focus_branch{1..3}.db`.
+- Legacy data goes under `Old/` (excluded from Git). Expected layout per branch: `Old/1`, `Old/2`, `Old/3` containing `ACCOUNT.FIL`, `CASH.FIL`, and optional text reports like `OUTPUT.TXT`, `F.TXT`, `FOCU.TXT`, `CMC.TXT`.
+- App databases are now created locally under `Data/` by default as `focus_branch{1..3}.db` (configurable via `App.config` key `DatabasePath`). On first run it will migrate any existing DBs from `%LocalAppData%\FocusModern\`.
 
 ## Project Layout
 - App project: `FocusModern/FocusModern`
+- Import CLI: `FocusModern/ImportCli`
 - Docs: `FocusModern/Docs`
 - App readme: `FocusModern/README.md`
+
+## Legacy Import (CLI)
+- Build single-file CLI:
+  - `dotnet publish FocusModern/ImportCli/ImportCli.csproj -c Release -p:PublishProfile=Properties/PublishProfiles/SingleFile-win-x64.pubxml`
+- Run import for a branch (stages files, imports customers from `ACCOUNT.FIL`, transactions from `CASH.FIL`, vehicles from text reports when available):
+  - `FocusModern/ImportCli/bin/SingleFile/win-x64/ImportCli.exe Old\1 --branch 1`
+
+Notes:
+- Vehicles are parsed from text reports (e.g., `OUTPUT.TXT`) by detecting patterns like `UP-25E / T-8036`. If a branch only has consolidated summaries, vehicle count may be zero.
+- Loans are not inferred (no reliable legacy loan master files were found). Provide loan sources to import.
+
+## Single-file Publish (App)
+- Build one-EXE app:
+  - `dotnet publish FocusModern/FocusModern/FocusModern.csproj -c Release -p:PublishProfile=Properties/PublishProfiles/SingleFile-win-x64.pubxml`
+- Output: `FocusModern/FocusModern/bin/SingleFile/win-x64/FocusModern.exe`
 
 ## Key Docs
 - `FocusModern/Docs/README.md` – index of specs/plans

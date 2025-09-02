@@ -387,5 +387,123 @@ namespace FocusModern.Data
             }
             return "";
         }
+
+        /// <summary>
+        /// Import vehicles by parsing text reports (OUTPUT.TXT, F.TXT, FOCU.TXT, CMC.TXT)
+        /// and extracting vehicle numbers like "UP-25E / T-8036".
+        /// Populates vehicles table with unique vehicle_number, and parses state_code, series_code, registration_number.
+        /// </summary>
+        public int ImportVehiclesFromDayBook()
+        {
+            int imported = 0;
+            dbManager.InitializeBranchDatabase(branchId);
+            var conn = dbManager.GetConnection(branchId);
+            conn.Open();
+            try
+            {
+                // Collect candidate text files
+                var candidates = new List<string>();
+                foreach (var name in new[] { "OUTPUT.TXT", "F.TXT", "FOCU.TXT", "CMC.TXT" })
+                {
+                    string path = null;
+                    using (var cmd = new SQLiteCommand(@"
+                        SELECT lf.file_path
+                        FROM legacy_files lf
+                        WHERE UPPER(lf.file_name) = @n
+                          AND lf.branch_id = @b
+                        ORDER BY lf.id DESC
+                        LIMIT 1;", conn))
+                    {
+                        cmd.Parameters.AddWithValue("@n", name);
+                        cmd.Parameters.AddWithValue("@b", branchId);
+                        path = cmd.ExecuteScalar() as string;
+                    }
+                    if (string.IsNullOrEmpty(path) || !File.Exists(path))
+                    {
+                        var fb = Path.Combine(Path.Combine(Directory.GetCurrentDirectory(), "Old"), branchId.ToString(), name);
+                        if (File.Exists(fb)) path = fb;
+                    }
+                    if (!string.IsNullOrEmpty(path) && File.Exists(path)) candidates.Add(path);
+                }
+
+                if (candidates.Count == 0) { Logger.Info("No text reports found for vehicle import"); return 0; }
+
+                var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+                foreach (var path in candidates)
+                {
+                    foreach (var line in ReadAllLinesBestEffort(path))
+                    {
+                        if (string.IsNullOrWhiteSpace(line)) continue;
+                        var veh = TryParseVehicleFromDayBookLine(line);
+                        if (veh == null) continue;
+
+                        var vehicleNumber = veh.Value.vehicleNumber;
+                        if (!seen.Add(vehicleNumber)) continue; // dedupe within this run
+
+                        using (var up = new SQLiteCommand(@"
+                            INSERT INTO vehicles (vehicle_number, state_code, series_code, registration_number, status, created_at, updated_at)
+                            VALUES (@vn, @st, @sr, @reg, 'Active', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+                            ON CONFLICT(vehicle_number) DO NOTHING;", conn))
+                        {
+                            up.Parameters.AddWithValue("@vn", vehicleNumber);
+                            up.Parameters.AddWithValue("@st", veh.Value.stateCode);
+                            up.Parameters.AddWithValue("@sr", veh.Value.seriesCode);
+                            up.Parameters.AddWithValue("@reg", veh.Value.registration);
+                            var res = up.ExecuteNonQuery();
+                            if (res > 0) imported++;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Error importing vehicles from day book: {ex.Message}\n{ex.StackTrace}");
+            }
+            finally
+            {
+                conn.Close();
+            }
+            return imported;
+        }
+
+        private (string vehicleNumber, string stateCode, string seriesCode, string registration)? TryParseVehicleFromDayBookLine(string line)
+        {
+            // Look for pattern like "UP-25E / T-8036" anywhere in the line
+            int slash = line.IndexOf('/');
+            if (slash <= 0 || slash >= line.Length - 1) return null;
+
+            // Extract left and right tokens around '/'
+            // Allow extra spaces
+            var left = line.Substring(0, slash).TrimEnd();
+            var right = line.Substring(slash + 1).TrimStart();
+
+            // Pull last whitespace-separated token on the left (vehicle prefix often at line end before slash)
+            var leftParts = left.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (leftParts.Length == 0) return null;
+            var leftToken = leftParts[leftParts.Length - 1]; // e.g., "UP-25E"
+
+            // Pull first token on right
+            var rightParts = right.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (rightParts.Length == 0) return null;
+            var rightToken = rightParts[0]; // e.g., "T-8036"
+
+            // Validate token shapes
+            if (!leftToken.Contains("-")) return null;
+            if (!rightToken.Contains("-")) return null;
+
+            // Derive state code and series code from left token
+            var lt = leftToken.Split('-');
+            if (lt.Length < 2) return null;
+            string state = lt[0].Trim();         // e.g., "UP"
+            string series = string.Join("-", lt.Skip(1)).Trim(); // e.g., "25E"
+
+            string reg = rightToken.Trim();      // e.g., "T-8036"
+            string full = state + "-" + series + " / " + reg;
+
+            // Basic sanity checks
+            if (state.Length < 2 || series.Length == 0 || reg.Length < 2) return null;
+            return (full, state, series, reg);
+        }
     }
 }

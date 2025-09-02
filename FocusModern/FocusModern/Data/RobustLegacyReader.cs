@@ -82,10 +82,22 @@ namespace FocusModern.Data
                 Logger.Error($"dBase parsing failed: {ex.Message}, trying heuristic parsing");
             }
 
+            // Validate that the parsed DBF appears sane (has expected fields)
             if (dbfSuccess)
             {
-                foreach (var record in dbfRecords)
-                    yield return record;
+                bool looksSane = false;
+                if (dbfRecords.Count > 0)
+                {
+                    var keys = new HashSet<string>(dbfRecords[0].Keys, StringComparer.OrdinalIgnoreCase);
+                    looksSane = keys.Contains("AMT") || keys.Contains("Amount") || (keys.Contains("DATE") || keys.Contains("Date"));
+                }
+                if (looksSane)
+                {
+                    foreach (var record in dbfRecords)
+                        yield return record;
+                    yield break;
+                }
+                // fall through to heuristic parsing
             }
             else
             {
@@ -94,16 +106,72 @@ namespace FocusModern.Data
                 {
                     yield return record;
                 }
+                yield break;
             }
+
+            // If we reached here, DBF path chosen but not sensible; use heuristic
+            foreach (var record in ParseCashHeuristically())
+                yield return record;
         }
 
         private Dictionary<string, object> ConvertDbfRecord(DBaseRecord dbfRecord)
         {
-            var result = new Dictionary<string, object>();
+            // Copy raw key/values
+            var result = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
             foreach (var kvp in dbfRecord.Values)
             {
                 result[kvp.Key] = kvp.Value;
             }
+
+            // Try to normalize into common keys used by importers
+            var keys = new HashSet<string>(dbfRecord.Values.Keys, StringComparer.OrdinalIgnoreCase);
+
+            // ACCOUNT.FIL heuristic: has ANAME + OPBAL fields
+            if (keys.Contains("ANAME") && keys.Contains("OPBAL") && !keys.Contains("AMT"))
+            {
+                var aname = dbfRecord.GetString("ANAME");
+                var (code, name) = ParseCustomerFromNameField(aname);
+                if (!string.IsNullOrEmpty(code)) result["CustomerCode"] = code;
+                if (!string.IsNullOrEmpty(name)) result["CustomerName"] = name;
+                return result;
+            }
+
+            // CASH.FIL heuristic: has DATE + AMT + CD
+            if (keys.Contains("DATE") && keys.Contains("AMT") && keys.Contains("CD"))
+            {
+                var aname = dbfRecord.GetString("ANAME");
+                var (code, name) = ParseCustomerFromNameField(aname);
+                if (!string.IsNullOrEmpty(code)) result["CustomerCode"] = code;
+                if (!string.IsNullOrEmpty(name)) result["CustomerName"] = name;
+
+                var dt = dbfRecord.GetDateTime("DATE");
+                if (dt != DateTime.MinValue) result["Date"] = dt;
+                result["Amount"] = dbfRecord.GetDecimal("AMT");
+                var cd = dbfRecord.GetString("CD");
+                if (!string.IsNullOrEmpty(cd)) result["TransactionType"] = cd;
+
+                // Prefer ENO as voucher number if present, else VNO
+                var eno = dbfRecord.GetLong("ENO");
+                if (eno > 0) result["VoucherNumber"] = eno.ToString();
+                else
+                {
+                    var vno = dbfRecord.GetString("VNO");
+                    if (!string.IsNullOrEmpty(vno)) result["VoucherNumber"] = vno;
+                }
+
+                // Description from NAR fields
+                var narParts = new List<string>();
+                foreach (var f in new[] { "NAR1", "NAR2", "NAR3", "NAR4" })
+                {
+                    var v = dbfRecord.GetString(f);
+                    if (!string.IsNullOrWhiteSpace(v)) narParts.Add(v.Trim());
+                }
+                if (narParts.Count > 0) result["Description"] = string.Join(" ", narParts);
+
+                // VehicleNumber not reliably present in CASH; leave blank unless extractable from ANAME
+                return result;
+            }
+
             return result;
         }
 

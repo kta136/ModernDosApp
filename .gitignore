@@ -67,3 +67,15 @@ Old/
 # Local env files
 .env
 **/.env
+# Build artifacts and binaries
+ReleaseArtifacts/
+Data/
+FocusModern/FocusModern/bin/
+FocusModern/FocusModern/obj/
+FocusModern/ImportCli/bin/
+FocusModern/ImportCli/obj/
+*.zip
+# Local/dev
+*.user
+*.suo
+.vs/

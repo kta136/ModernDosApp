@@ -212,3 +212,15 @@ SQLite databases are stored in:
 - All data persists to SQLite databases
 
 **Ready to Use:** The application can be built and run immediately in Visual Studio 2022. Customer management is fully functional and ready for production use!
+
+## Recent Updates
+
+- Database location now defaults to local `Data/` folder (configurable via `App.config` key `DatabasePath`). On first run, existing DBs from `%LocalAppData%\FocusModern%` are migrated into this folder.
+- Added Import CLI (`FocusModern/ImportCli`) to stage legacy files and import:
+  - ACCOUNT.FIL → customers, CASH.FIL → transactions, text reports (`OUTPUT.TXT`, `F.TXT`, `FOCU.TXT`, `CMC.TXT`) → vehicles.
+  - Build single-file CLI: `dotnet publish FocusModern/ImportCli/ImportCli.csproj -c Release -p:PublishProfile=Properties/PublishProfiles/SingleFile-win-x64.pubxml`
+  - Run: `FocusModern/ImportCli/bin/SingleFile/win-x64/ImportCli.exe Old\1 --branch 1`
+- Single-file publish profiles added for one-EXE distribution:
+  - App: `dotnet publish FocusModern/FocusModern/FocusModern.csproj -c Release -p:PublishProfile=Properties/PublishProfiles/SingleFile-win-x64.pubxml`
+  - CLI: `dotnet publish FocusModern/ImportCli/ImportCli.csproj -c Release -p:PublishProfile=Properties/PublishProfiles/SingleFile-win-x64.pubxml`
+- Loans are not auto-created; please provide a loan master/source to import if required.
