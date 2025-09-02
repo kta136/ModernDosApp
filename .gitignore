@@ -51,6 +51,9 @@ Desktop.ini
 # Old legacy data (large/sensitive)
 Old/
 
+# Claude configs (local tooling)
+**/.claude/
+
 # Build artifacts and intermediates
 **/*.deps.json
 **/*.runtimeconfig.json
