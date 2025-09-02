@@ -40,12 +40,17 @@ namespace FocusModern.Forms
                 vehicleService = new VehicleService(databaseManager, currentBranch);
                 Logger.Debug(string.Format("VehicleService initialized for Branch {0}", currentBranch));
 
-                // Update form title
-                this.Text = string.Format("FOCUS Modern - Branch {0}", currentBranch);
-                lblCurrentBranch.Text = string.Format("Branch {0}", currentBranch);
+                // Update form title (no branch number in UI)
+                this.Text = "FOCUS Modern";
+                lblCurrentBranch.Text = string.Empty;
 
-                // Set branch-specific UI colors
-                SetBranchColors();
+                // Hide legacy green header bar and secondary toolbar to simplify UI
+                pnlBranchHeader.Visible = false;
+                pnlBranchHeader.Height = 0;
+                try { toolStrip.Visible = false; } catch { }
+
+                // Optional: keep internal branch color logic disabled in UI
+                // SetBranchColors();
 
                 // Load dashboard data
                 LoadDashboardData();
@@ -91,14 +96,14 @@ namespace FocusModern.Forms
                 // Show financial summary
                 lblTodaysPayments.Text = string.Format("Total Loans: ₹{0:N0} | Balance: ₹{1:N0}", vehicleStats.TotalLoanAmount, vehicleStats.TotalBalanceAmount);
                 
-                // Update status
-                lblStatus.Text = string.Format("Branch {0} | Connected", currentBranch);
+                // Update status (no branch number)
+                lblStatus.Text = "Connected";
                 lblStatus.ForeColor = Color.DarkGreen;
             }
             catch (Exception ex)
             {
                 Logger.Error("Error loading dashboard data", ex);
-                lblStatus.Text = string.Format("Branch {0} | Error", currentBranch);
+                lblStatus.Text = "Error";
                 lblStatus.ForeColor = Color.Red;
             }
         }

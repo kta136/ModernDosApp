@@ -439,7 +439,8 @@ namespace FocusModern.Forms
             this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.toolStrip);
             this.Controls.Add(this.menuStrip);
-            this.Controls.Add(this.pnlBranchHeader);
+            // Removed green header bar
+            // this.Controls.Add(this.pnlBranchHeader);
             this.KeyPreview = true;
             this.MainMenuStrip = this.menuStrip;
             this.MinimumSize = new System.Drawing.Size(800, 600);
@@ -448,8 +449,8 @@ namespace FocusModern.Forms
             this.Text = "FOCUS Modern";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
-            this.pnlBranchHeader.ResumeLayout(false);
-            this.pnlBranchHeader.PerformLayout();
+            // this.pnlBranchHeader.ResumeLayout(false);
+            // this.pnlBranchHeader.PerformLayout();
             this.menuStrip.ResumeLayout(false);
             this.menuStrip.PerformLayout();
             this.toolStrip.ResumeLayout(false);
