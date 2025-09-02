@@ -63,3 +63,7 @@ Old/
 *.bak
 *.tmp
 *.DS_Store
+
+# Local env files
+.env
+**/.env
