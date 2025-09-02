@@ -67,6 +67,7 @@ namespace FocusModern.Forms
             this.StartPosition = FormStartPosition.CenterParent;
             this.ClientSize = new Size(1100, 700);
             this.MinimumSize = new Size(1000, 600);
+            this.AutoScaleMode = AutoScaleMode.Font;
 
             tabs = new TabControl { Dock = DockStyle.Fill };
             var tpDaily = new TabPage("Daily Payments");
@@ -78,7 +79,7 @@ namespace FocusModern.Forms
             btnDailyGenerate = new Button { Text = "Generate", Location = new Point(180, 18), Width = 90 };
             btnDailyExport = new Button { Text = "Export CSV", Location = new Point(280, 18), Width = 100 };
             lblDailySummary = new Label { Location = new Point(400, 22), AutoSize = true };
-            dgvDaily = new DataGridView { Location = new Point(20, 60), Size = new Size(1030, 560), ReadOnly = true, AllowUserToAddRows = false, AllowUserToDeleteRows = false, SelectionMode = DataGridViewSelectionMode.FullRowSelect, AutoGenerateColumns = false };
+            dgvDaily = new DataGridView { Location = new Point(20, 60), Size = new Size(1030, 560), ReadOnly = true, AllowUserToAddRows = false, AllowUserToDeleteRows = false, SelectionMode = DataGridViewSelectionMode.FullRowSelect, AutoGenerateColumns = false, Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right };
             dgvDaily.Columns.Add(new DataGridViewTextBoxColumn { Name = "PaymentNumber", HeaderText = "Payment No.", DataPropertyName = "PaymentNumber", Width = 140 });
             dgvDaily.Columns.Add(new DataGridViewTextBoxColumn { Name = "PaymentDate", HeaderText = "Date", DataPropertyName = "PaymentDate", Width = 110, DefaultCellStyle = new DataGridViewCellStyle { Format = "dd/MM/yyyy" } });
             dgvDaily.Columns.Add(new DataGridViewTextBoxColumn { Name = "Customer", HeaderText = "Customer", DataPropertyName = "CustomerName", Width = 200 });
@@ -97,7 +98,7 @@ namespace FocusModern.Forms
             btnMonthlyGenerate = new Button { Text = "Generate", Location = new Point(290, 18), Width = 90 };
             btnMonthlyExport = new Button { Text = "Export CSV", Location = new Point(390, 18), Width = 100 };
             lblMonthlySummary = new Label { Location = new Point(510, 22), AutoSize = true };
-            dgvMonthly = new DataGridView { Location = new Point(20, 60), Size = new Size(1030, 560), ReadOnly = true, AllowUserToAddRows = false, AllowUserToDeleteRows = false, SelectionMode = DataGridViewSelectionMode.FullRowSelect, AutoGenerateColumns = false };
+            dgvMonthly = new DataGridView { Location = new Point(20, 60), Size = new Size(1030, 560), ReadOnly = true, AllowUserToAddRows = false, AllowUserToDeleteRows = false, SelectionMode = DataGridViewSelectionMode.FullRowSelect, AutoGenerateColumns = false, Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right };
             dgvMonthly.Columns.Add(new DataGridViewTextBoxColumn { Name = "Date", HeaderText = "Date", DataPropertyName = "Date", Width = 140 });
             dgvMonthly.Columns.Add(new DataGridViewTextBoxColumn { Name = "Amount", HeaderText = "Amount", DataPropertyName = "Amount", Width = 160 });
             btnMonthlyGenerate.Click += (s, e) => GenerateMonthly();
@@ -109,7 +110,7 @@ namespace FocusModern.Forms
             btnLoanGenerate = new Button { Text = "Generate", Location = new Point(380, 18), Width = 90 };
             btnLoanExport = new Button { Text = "Export CSV", Location = new Point(480, 18), Width = 100 };
             lblLoanSummary = new Label { Location = new Point(600, 22), AutoSize = true };
-            dgvLoanPayments = new DataGridView { Location = new Point(20, 60), Size = new Size(1030, 560), ReadOnly = true, AllowUserToAddRows = false, AllowUserToDeleteRows = false, SelectionMode = DataGridViewSelectionMode.FullRowSelect, AutoGenerateColumns = false };
+            dgvLoanPayments = new DataGridView { Location = new Point(20, 60), Size = new Size(1030, 560), ReadOnly = true, AllowUserToAddRows = false, AllowUserToDeleteRows = false, SelectionMode = DataGridViewSelectionMode.FullRowSelect, AutoGenerateColumns = false, Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right };
             dgvLoanPayments.Columns.Add(new DataGridViewTextBoxColumn { Name = "Date", HeaderText = "Date", DataPropertyName = "PaymentDate", Width = 110, DefaultCellStyle = new DataGridViewCellStyle { Format = "dd/MM/yyyy" } });
             dgvLoanPayments.Columns.Add(new DataGridViewTextBoxColumn { Name = "Number", HeaderText = "Number", DataPropertyName = "PaymentNumber", Width = 140 });
             dgvLoanPayments.Columns.Add(new DataGridViewTextBoxColumn { Name = "Amount", HeaderText = "Amount", DataPropertyName = "TotalAmount", Width = 120, DefaultCellStyle = new DataGridViewCellStyle { Format = "C2" } });
@@ -124,6 +125,13 @@ namespace FocusModern.Forms
             tabs.TabPages.Add(tpLoan);
 
             this.Controls.Add(tabs);
+
+            // Grids styling
+            foreach (var grid in new[] { dgvDaily, dgvMonthly, dgvLoanPayments })
+            {
+                grid.AlternatingRowsDefaultCellStyle.BackColor = Color.AliceBlue;
+                grid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+            }
         }
 
         private void InitializeServices()
@@ -158,6 +166,11 @@ namespace FocusModern.Forms
                 cmbLoan.Items.Clear();
                 foreach (var l in loans) cmbLoan.Items.Add(new LoanItem(l));
                 if (cmbLoan.Items.Count > 0) cmbLoan.SelectedIndex = 0;
+
+                // Prefill default reports
+                dtDaily.Value = DateTime.Today;
+                GenerateDaily();
+                GenerateMonthly();
             }
             catch (Exception ex)
             {
@@ -318,4 +331,3 @@ namespace FocusModern.Forms
         }
     }
 }
-

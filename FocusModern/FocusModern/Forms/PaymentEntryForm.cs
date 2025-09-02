@@ -55,6 +55,9 @@ namespace FocusModern.Forms
             this.MinimizeBox = false;
             this.MaximizeBox = false;
             this.ClientSize = new Size(520, 320);
+            this.AutoScaleMode = AutoScaleMode.Font;
+            this.KeyPreview = true;
+            this.KeyDown += (s, e) => { if (e.KeyCode == Keys.Escape) { this.DialogResult = DialogResult.Cancel; this.Close(); } };
 
             var lblLoan = new Label { Text = "Loan:", Location = new Point(20, 20), AutoSize = true };
             cmbLoan = new ComboBox { Location = new Point(120, 16), Width = 360, DropDownStyle = ComboBoxStyle.DropDownList };
@@ -80,10 +83,13 @@ namespace FocusModern.Forms
             var lblDesc = new Label { Text = "Description:", Location = new Point(20, 220), AutoSize = true };
             txtDescription = new TextBox { Location = new Point(120, 216), Width = 360 };
 
-            btnSave = new Button { Text = "Save", Location = new Point(320, 260), Width = 75 };
-            btnCancel = new Button { Text = "Cancel", Location = new Point(405, 260), Width = 75 };
+            btnSave = new Button { Text = "Save", Location = new Point(320, 260), Width = 90 };
+            btnCancel = new Button { Text = "Cancel", Location = new Point(420, 260), Width = 90 };
             btnCancel.Click += (s, e) => { this.DialogResult = DialogResult.Cancel; this.Close(); };
             btnSave.Click += (s, e) => SavePayment();
+
+            this.AcceptButton = btnSave;
+            this.CancelButton = btnCancel;
 
             this.Controls.Add(lblLoan);
             this.Controls.Add(cmbLoan);
@@ -220,4 +226,3 @@ namespace FocusModern.Forms
         }
     }
 }
-

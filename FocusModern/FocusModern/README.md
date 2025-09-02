@@ -81,6 +81,6 @@
 - Backup/Settings: Not implemented.
 
 ### Remaining Work
- - Add print/PDF export to reports.
+ - Add print/PDF export to reports and polish visuals (headers, totals, print preview).
  - Implement Backup/Restore and a Settings dialog for paths/log level/company.
  - Prepare a migration utility for legacy `Old/{1,2,3}` data files.

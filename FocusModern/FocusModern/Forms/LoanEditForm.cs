@@ -73,6 +73,9 @@ namespace FocusModern.Forms
             this.MinimizeBox = false;
             this.MaximizeBox = false;
             this.ClientSize = new Size(640, 360);
+            this.AutoScaleMode = AutoScaleMode.Font;
+            this.KeyPreview = true;
+            this.KeyDown += (s, e) => { if (e.KeyCode == Keys.Escape) { this.DialogResult = DialogResult.Cancel; this.Close(); } };
 
             int x1 = 20, x2 = 140, w = 460, y = 20, dy = 30;
 
@@ -112,8 +115,8 @@ namespace FocusModern.Forms
             txtRemarks = new TextBox { Location = new Point(x2, y - 4), Width = w, Height = 50, Multiline = true };
             y += 60;
 
-            btnSave = new Button { Text = isEditMode ? "Update" : "Create", Location = new Point(420, y), Width = 90 };
-            btnCancel = new Button { Text = "Cancel", Location = new Point(520, y), Width = 80 };
+            btnSave = new Button { Text = isEditMode ? "Update" : "Create", Location = new Point(420, y), Width = 100 };
+            btnCancel = new Button { Text = "Cancel", Location = new Point(530, y), Width = 80 };
 
             btnCancel.Click += (s, e) => { this.DialogResult = DialogResult.Cancel; this.Close(); };
             btnSave.Click += (s, e) => SaveLoan();
@@ -133,6 +136,9 @@ namespace FocusModern.Forms
             Controls.Add(txtRemarks);
             Controls.Add(btnSave);
             Controls.Add(btnCancel);
+
+            this.AcceptButton = btnSave;
+            this.CancelButton = btnCancel;
         }
 
         private void LoadDropdowns()
@@ -199,7 +205,7 @@ namespace FocusModern.Forms
                 };
                 tmp.CalculateEMI();
                 tmp.CalculateMaturityDate();
-                lblEMI.Text = $"?{tmp.EmiAmount:N2}";
+                lblEMI.Text = tmp.EmiAmount.ToString("C2");
                 lblMaturity.Text = tmp.MaturityDate.ToString("dd/MM/yyyy");
             }
             catch { }
@@ -272,4 +278,3 @@ namespace FocusModern.Forms
         }
     }
 }
-

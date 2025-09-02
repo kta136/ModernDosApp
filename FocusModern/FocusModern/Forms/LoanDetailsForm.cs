@@ -47,6 +47,9 @@ namespace FocusModern.Forms
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.MinimizeBox = false;
             this.MaximizeBox = false;
+            this.AutoScaleMode = AutoScaleMode.Font;
+            this.KeyPreview = true;
+            this.KeyDown += (s, e) => { if (e.KeyCode == Keys.Escape) { this.DialogResult = DialogResult.OK; this.Close(); } };
 
             lblHeader = new Label { Text = "Loan", Font = new Font(FontFamily.GenericSansSerif, 12, FontStyle.Bold), Location = new Point(20, 15), AutoSize = true };
             lblCustomer = new Label { Location = new Point(20, 50), AutoSize = true };
@@ -58,7 +61,7 @@ namespace FocusModern.Forms
             lblBalance = new Label { Location = new Point(20, 200), AutoSize = true, ForeColor = Color.Maroon };
             lblPenalty = new Label { Location = new Point(20, 225), AutoSize = true };
 
-            dgvPayments = new DataGridView { Location = new Point(20, 260), Size = new Size(860, 250), ReadOnly = true, AllowUserToAddRows = false, AllowUserToDeleteRows = false, SelectionMode = DataGridViewSelectionMode.FullRowSelect, AutoGenerateColumns = false };
+            dgvPayments = new DataGridView { Location = new Point(20, 260), Size = new Size(860, 250), ReadOnly = true, AllowUserToAddRows = false, AllowUserToDeleteRows = false, SelectionMode = DataGridViewSelectionMode.FullRowSelect, AutoGenerateColumns = false, Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right };
             dgvPayments.Columns.Add(new DataGridViewTextBoxColumn { Name = "Date", HeaderText = "Date", DataPropertyName = "PaymentDate", Width = 100, DefaultCellStyle = new DataGridViewCellStyle { Format = "dd/MM/yyyy" } });
             dgvPayments.Columns.Add(new DataGridViewTextBoxColumn { Name = "Number", HeaderText = "Number", DataPropertyName = "PaymentNumber", Width = 140 });
             dgvPayments.Columns.Add(new DataGridViewTextBoxColumn { Name = "Amount", HeaderText = "Amount", DataPropertyName = "TotalAmount", Width = 100, DefaultCellStyle = new DataGridViewCellStyle { Format = "C2" } });
@@ -66,7 +69,7 @@ namespace FocusModern.Forms
             dgvPayments.Columns.Add(new DataGridViewTextBoxColumn { Name = "Method", HeaderText = "Method", DataPropertyName = "PaymentMethod", Width = 90 });
             dgvPayments.Columns.Add(new DataGridViewTextBoxColumn { Name = "Voucher", HeaderText = "Voucher", DataPropertyName = "VoucherNumber", Width = 90 });
 
-            btnClose = new Button { Text = "Close", Location = new Point(800, 520), Width = 80 };
+            btnClose = new Button { Text = "Close", Location = new Point(800, 520), Width = 80, Anchor = AnchorStyles.Bottom | AnchorStyles.Right };
             btnClose.Click += (s, e) => { this.DialogResult = DialogResult.OK; this.Close(); };
 
             Controls.Add(lblHeader);
@@ -80,6 +83,10 @@ namespace FocusModern.Forms
             Controls.Add(lblPenalty);
             Controls.Add(dgvPayments);
             Controls.Add(btnClose);
+
+            // Grid styling
+            dgvPayments.AlternatingRowsDefaultCellStyle.BackColor = Color.AliceBlue;
+            dgvPayments.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
         }
 
         private void LoadDetails()
@@ -116,4 +123,3 @@ namespace FocusModern.Forms
         }
     }
 }
-

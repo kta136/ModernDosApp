@@ -46,6 +46,9 @@ namespace FocusModern.Forms
             this.MinimizeBox = false;
             this.MaximizeBox = false;
             this.ClientSize = new Size(560, 360);
+            this.AutoScaleMode = AutoScaleMode.Font;
+            this.KeyPreview = true;
+            this.KeyDown += (s, e) => { if (e.KeyCode == Keys.Escape) { this.DialogResult = DialogResult.Cancel; this.Close(); } };
 
             lblHeader = new Label { Text = "Payment", Font = new Font(FontFamily.GenericSansSerif, 12, FontStyle.Bold), Location = new Point(20, 15), AutoSize = true };
             lblNumber = new Label { Text = "Number:", Location = new Point(20, 50), AutoSize = true };
@@ -64,6 +67,8 @@ namespace FocusModern.Forms
             btnClose = new Button { Text = "Close", Location = new Point(430, 300), Width = 100 };
             btnClose.Click += (s, e) => { this.DialogResult = DialogResult.Cancel; this.Close(); };
             btnCancelPayment.Click += (s, e) => CancelPayment();
+
+            this.AcceptButton = btnClose;
 
             this.Controls.AddRange(new Control[]
             {
@@ -170,4 +175,3 @@ namespace FocusModern.Forms
         }
     }
 }
-

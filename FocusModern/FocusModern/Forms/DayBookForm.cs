@@ -37,15 +37,15 @@ namespace FocusModern.Forms
             this.ClientSize = new Size(1000, 600);
             this.MinimumSize = new Size(900, 500);
 
-            dtFrom = new DateTimePicker { Format = DateTimePickerFormat.Short, Location = new Point(20, 16), Width = 120 };
-            dtTo = new DateTimePicker { Format = DateTimePickerFormat.Short, Location = new Point(150, 16), Width = 120 };
-            txtSearch = new TextBox { Location = new Point(290, 16), Width = 300, PlaceholderText = "Search description, reference, vehicle, customer" };
-            btnLoad = new Button { Text = "Load", Location = new Point(600, 14), Width = 80 };
+            dtFrom = new DateTimePicker { Format = DateTimePickerFormat.Short, Location = new Point(20, 16), Width = 120, Anchor = AnchorStyles.Top | AnchorStyles.Left };
+            dtTo = new DateTimePicker { Format = DateTimePickerFormat.Short, Location = new Point(150, 16), Width = 120, Anchor = AnchorStyles.Top | AnchorStyles.Left };
+            txtSearch = new TextBox { Location = new Point(290, 16), Width = 300, Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right, PlaceholderText = "Search description, reference, vehicle, customer" };
+            btnLoad = new Button { Text = "Load", Location = new Point(600, 14), Width = 80, Anchor = AnchorStyles.Top | AnchorStyles.Right };
             btnLoad.Click += (s, e) => LoadData();
 
-            lblSummary = new Label { Location = new Point(700, 18), AutoSize = true };
+            lblSummary = new Label { Location = new Point(700, 18), AutoSize = true, Anchor = AnchorStyles.Top | AnchorStyles.Right };
 
-            dgv = new DataGridView { Location = new Point(20, 50), Size = new Size(950, 520), ReadOnly = true, AllowUserToAddRows = false, AllowUserToDeleteRows = false, SelectionMode = DataGridViewSelectionMode.FullRowSelect, AutoGenerateColumns = false };
+            dgv = new DataGridView { Location = new Point(20, 50), Size = new Size(950, 520), ReadOnly = true, AllowUserToAddRows = false, AllowUserToDeleteRows = false, SelectionMode = DataGridViewSelectionMode.FullRowSelect, AutoGenerateColumns = false, Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right };
             dgv.Columns.Add(new DataGridViewTextBoxColumn { Name = "Date", HeaderText = "Date", DataPropertyName = "TransactionDate", Width = 100, DefaultCellStyle = new DataGridViewCellStyle { Format = "dd/MM/yyyy" } });
             dgv.Columns.Add(new DataGridViewTextBoxColumn { Name = "Voucher", HeaderText = "Voucher", DataPropertyName = "VoucherNumber", Width = 100 });
             dgv.Columns.Add(new DataGridViewTextBoxColumn { Name = "Vehicle", HeaderText = "Vehicle", DataPropertyName = "VehicleNumber", Width = 120 });
@@ -77,7 +77,13 @@ namespace FocusModern.Forms
                 var search = txtSearch.Text.Trim();
                 if (!string.IsNullOrEmpty(search))
                 {
-                    list = transactionRepository.SearchTransactions(search);
+                    var lower = search.ToLowerInvariant();
+                    list = list.Where(t =>
+                        (t.Description?.ToLowerInvariant().Contains(lower) ?? false) ||
+                        (t.ReferenceNumber?.ToLowerInvariant().Contains(lower) ?? false) ||
+                        (t.VehicleNumber?.ToLowerInvariant().Contains(lower) ?? false) ||
+                        (t.CustomerName?.ToLowerInvariant().Contains(lower) ?? false)
+                    ).ToList();
                 }
 
                 dgv.DataSource = list;
@@ -98,4 +104,3 @@ namespace FocusModern.Forms
         }
     }
 }
-

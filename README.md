@@ -48,7 +48,7 @@ dotnet run
 - Migration tooling: Not implemented.
 
 ### Remaining Work
-- Reports UI: daily collections, monthly summary, loan statement; add print/PDF export.
+- Reports: add print/PDF export and polish visuals (headers, totals, print preview).
 - Backup/Restore UI and logic.
 - Settings dialog (paths, log level, company info) with persistence.
 - Legacy data migration tool for `Old/{1,2,3}` (.FIL/.NTX) per branch.
