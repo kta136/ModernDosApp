@@ -2,6 +2,13 @@ bash <<'EOF'
 set -e
 echo "==> Registering MCP servers (filesystem, browser-tools, context7)"
 
+# Load local env if present (Context7 key, etc.)
+if [ -f MCP/context7/.env ]; then
+  set -a
+  . MCP/context7/.env
+  set +a
+fi
+
 # Filesystem - include project memory bank and MCP folder for quick access
 claude mcp add filesystem -s user \
   -- npx -y @modelcontextprotocol/server-filesystem \
@@ -13,9 +20,8 @@ claude mcp add browser-tools -s user \
   -- npx -y @agentdeskai/browser-tools-mcp || true
 
 # Context7 - Upstash memory server (requires Upstash env vars)
-if [ -z "$UPSTASH_REDIS_REST_URL" ] || [ -z "$UPSTASH_REDIS_REST_TOKEN" ] || \
-   [ -z "$UPSTASH_VECTOR_REST_URL" ] || [ -z "$UPSTASH_VECTOR_REST_TOKEN" ]; then
-  echo "WARN: Upstash env vars not set. See MCP/context7/README.md"
+if [ -z "$CONTEXT7_API_KEY" ]; then
+  echo "WARN: CONTEXT7_API_KEY not set. Put it in MCP/context7/.env"
 fi
 
 claude mcp add context7 -s user \
