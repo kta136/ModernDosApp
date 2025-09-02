@@ -76,10 +76,10 @@
 - Vehicles: Implemented (list/edit forms, validation, stats on dashboard).
 - Loans: Implemented create/edit and details; list wired; Make Payment integrated to entry.
 - Payments: Implemented entry and details (with cancellation via reversal); vouchers use per-branch sequence; day-book transaction created on payment/cancel; list supports search and date range.
+- Day Book: Implemented viewer (date range + search). Temporarily bound to F6.
 - Reports/Backup/Settings: Not implemented.
 
 ### Remaining Work
-- Add a Day Book (transactions) viewer UI with date range + search.
 - Build Reports UI (daily collection, monthly summary, loan statement) with print/PDF export.
 - Implement Backup/Restore and a Settings dialog for paths/log level/company.
 - Prepare a migration utility for legacy `Old/{1,2,3}` data files.

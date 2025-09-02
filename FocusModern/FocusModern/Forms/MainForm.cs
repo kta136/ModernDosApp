@@ -2,6 +2,7 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using FocusModern.Data;
+using FocusModern.Data.Repositories;
 using FocusModern.Services;
 using FocusModern.Utilities;
 
@@ -297,7 +298,20 @@ namespace FocusModern.Forms
                     btnPayments_Click(null, null);
                     return true;
                 case Keys.F6:
-                    btnReports_Click(null, null);
+                    // Temporarily use F6 to open Day Book until Reports UI exists
+                    try
+                    {
+                        var txnRepo = new TransactionRepository(databaseManager, currentBranch);
+                        using (var dayBook = new DayBookForm(currentBranch, txnRepo))
+                        {
+                            dayBook.ShowDialog();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Error($"Error opening day book: {ex.Message}", ex);
+                        MessageBox.Show($"Error opening day book: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                     return true;
                 case Keys.Control | Keys.B:
                     btnSwitchBranch_Click(null, null);

@@ -42,12 +42,11 @@ dotnet run
 - Vehicles: Implemented (list/edit forms, validation, statistics).
 - Loans: Implemented create/edit and details; list wired; Make Payment integrated to entry.
 - Payments: Implemented entry and details (with cancel/reversal), list with search and working date range picker; vouchers use per-branch sequence; day-book transaction created on payment/cancel.
+- Day Book: Implemented viewer (date range + search). Temporarily bound to F6.
 - Reports/Backup/Settings: Not implemented.
 - Migration tooling: Not implemented.
 
 ### Remaining Work
-- Day Book (transactions) viewer UI with date range + search.
-- Day Book (transactions) viewer UI with date range + search.
 - Reports UI: daily collections, monthly summary, loan statement; add print/PDF export.
 - Backup/Restore UI and logic.
 - Settings dialog (paths, log level, company info) with persistence.
