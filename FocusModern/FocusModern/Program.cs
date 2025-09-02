@@ -1,5 +1,6 @@
 using System;
 using System.Windows.Forms;
+using System.Text;
 using FocusModern.Forms;
 using FocusModern.Utilities;
 
@@ -18,6 +19,8 @@ namespace FocusModern
         {
             try
             {
+                // Enable code page encodings (e.g., Windows-1252) used by legacy files
+                Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
                 // Enable visual styles for Windows Forms
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);

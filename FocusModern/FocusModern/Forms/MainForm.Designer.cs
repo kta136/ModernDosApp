@@ -182,6 +182,11 @@ namespace FocusModern.Forms
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(46, 20);
             this.toolsToolStripMenuItem.Text = "&Tools";
+            var legacyMigration = new System.Windows.Forms.ToolStripMenuItem();
+            legacyMigration.Name = "legacyMigrationToolStripMenuItem";
+            legacyMigration.Text = "Legacy Migration...";
+            legacyMigration.Click += (s, e) => this.OpenMigration();
+            this.toolsToolStripMenuItem.DropDownItems.Add(legacyMigration);
             // 
             // helpToolStripMenuItem
             // 
@@ -270,18 +275,19 @@ namespace FocusModern.Forms
             // 
             // gbSummary
             // 
-            this.gbSummary.Controls.Add(this.lblTodaysPayments);
-            this.gbSummary.Controls.Add(this.lblTodaysPaymentsLabel);
-            this.gbSummary.Controls.Add(this.lblActiveLoans);
-            this.gbSummary.Controls.Add(this.lblActiveLoansLabel);
-            this.gbSummary.Controls.Add(this.lblTotalCustomers);
             this.gbSummary.Controls.Add(this.lblTotalCustomersLabel);
-            this.gbSummary.Location = new System.Drawing.Point(20, 20);
+            this.gbSummary.Controls.Add(this.lblTotalCustomers);
+            this.gbSummary.Controls.Add(this.lblActiveLoansLabel);
+            this.gbSummary.Controls.Add(this.lblActiveLoans);
+            this.gbSummary.Controls.Add(this.lblTodaysPaymentsLabel);
+            this.gbSummary.Controls.Add(this.lblTodaysPayments);
+            this.gbSummary.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
+            this.gbSummary.Location = new System.Drawing.Point(16, 16);
             this.gbSummary.Name = "gbSummary";
-            this.gbSummary.Size = new System.Drawing.Size(960, 100);
+            this.gbSummary.Size = new System.Drawing.Size(968, 120);
             this.gbSummary.TabIndex = 0;
             this.gbSummary.TabStop = false;
-            this.gbSummary.Text = "Summary";
+            this.gbSummary.Text = "Dashboard Summary";
             // 
             // lblTodaysPayments
             // 
@@ -349,12 +355,13 @@ namespace FocusModern.Forms
             // gbRecentTransactions
             // 
             this.gbRecentTransactions.Controls.Add(this.lvRecentTransactions);
-            this.gbRecentTransactions.Location = new System.Drawing.Point(20, 140);
+            this.gbRecentTransactions.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
+            this.gbRecentTransactions.Location = new System.Drawing.Point(16, 152);
             this.gbRecentTransactions.Name = "gbRecentTransactions";
-            this.gbRecentTransactions.Size = new System.Drawing.Size(960, 200);
+            this.gbRecentTransactions.Size = new System.Drawing.Size(968, 250);
             this.gbRecentTransactions.TabIndex = 1;
             this.gbRecentTransactions.TabStop = false;
-            this.gbRecentTransactions.Text = "Recent Transactions";
+            this.gbRecentTransactions.Text = "Recent Activity";
             // 
             // lvRecentTransactions
             // 
@@ -370,38 +377,35 @@ namespace FocusModern.Forms
             // 
             // btnSwitchBranch
             // 
-            this.btnSwitchBranch.BackColor = System.Drawing.Color.LightYellow;
-            this.btnSwitchBranch.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnSwitchBranch.Location = new System.Drawing.Point(20, 360);
+            this.btnSwitchBranch.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnSwitchBranch.Location = new System.Drawing.Point(16, 418);
             this.btnSwitchBranch.Name = "btnSwitchBranch";
-            this.btnSwitchBranch.Size = new System.Drawing.Size(100, 30);
+            this.btnSwitchBranch.Size = new System.Drawing.Size(120, 36);
             this.btnSwitchBranch.TabIndex = 2;
             this.btnSwitchBranch.Text = "Switch Branch";
-            this.btnSwitchBranch.UseVisualStyleBackColor = false;
+            this.btnSwitchBranch.UseVisualStyleBackColor = true;
             this.btnSwitchBranch.Click += new System.EventHandler(this.btnSwitchBranch_Click);
             // 
             // btnBackup
             // 
-            this.btnBackup.BackColor = System.Drawing.Color.LightCyan;
-            this.btnBackup.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnBackup.Location = new System.Drawing.Point(130, 360);
+            this.btnBackup.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnBackup.Location = new System.Drawing.Point(146, 418);
             this.btnBackup.Name = "btnBackup";
-            this.btnBackup.Size = new System.Drawing.Size(100, 30);
+            this.btnBackup.Size = new System.Drawing.Size(120, 36);
             this.btnBackup.TabIndex = 3;
-            this.btnBackup.Text = "Backup Data";
-            this.btnBackup.UseVisualStyleBackColor = false;
+            this.btnBackup.Text = "Backup & Restore";
+            this.btnBackup.UseVisualStyleBackColor = true;
             this.btnBackup.Click += new System.EventHandler(this.btnBackup_Click);
             // 
             // btnSettings
             // 
-            this.btnSettings.BackColor = System.Drawing.Color.LightGray;
-            this.btnSettings.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnSettings.Location = new System.Drawing.Point(880, 360);
+            this.btnSettings.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnSettings.Location = new System.Drawing.Point(864, 418);
             this.btnSettings.Name = "btnSettings";
-            this.btnSettings.Size = new System.Drawing.Size(100, 30);
+            this.btnSettings.Size = new System.Drawing.Size(120, 36);
             this.btnSettings.TabIndex = 4;
             this.btnSettings.Text = "Settings";
-            this.btnSettings.UseVisualStyleBackColor = false;
+            this.btnSettings.UseVisualStyleBackColor = true;
             this.btnSettings.Click += new System.EventHandler(this.btnSettings_Click);
             // 
             // statusStrip

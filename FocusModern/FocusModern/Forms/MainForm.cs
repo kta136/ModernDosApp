@@ -57,6 +57,9 @@ namespace FocusModern.Forms
 
                 // Apply modern theme
                 Theme.Apply(this);
+                
+                // Apply responsive layout
+                ResponsiveLayout.Apply(this);
 
                 Logger.Info(string.Format("Main form initialized for Branch {0}", currentBranch));
             }
@@ -236,6 +239,23 @@ namespace FocusModern.Forms
             {
                 Logger.Error($"Error opening reports: {ex.Message}", ex);
                 MessageBox.Show($"Error opening reports: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        // Tools -> Legacy Migration
+        private void OpenMigration()
+        {
+            try
+            {
+                using (var mf = new MigrationForm(databaseManager))
+                {
+                    mf.ShowDialog();
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Error opening migration: {ex.Message}");
+                MessageBox.Show($"Error opening migration: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

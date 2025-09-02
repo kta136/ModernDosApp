@@ -41,6 +41,14 @@ namespace FocusModern.Forms
                 LoadCustomers();
 
                 Theme.Apply(this);
+                ResponsiveLayout.Apply(this);
+                
+                // Make the data grid responsive
+                var dataGrid = this.Controls.OfType<DataGridView>().FirstOrDefault();
+                if (dataGrid != null)
+                {
+                    ResponsiveLayout.MakeDataGridResponsive(dataGrid, this);
+                }
 
                 Logger.Info($"Customer list form initialized for Branch {currentBranch}");
             }

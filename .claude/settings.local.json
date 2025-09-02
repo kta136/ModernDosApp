@@ -43,7 +43,11 @@
       "Bash(timeout:*)",
       "Read(C:\\Users\\kk\\AppData\\Local\\FocusModern/**)",
       "Read(C:\\Users\\kk\\AppData\\Local\\FocusModern\\Logs/**)",
-      "Read(C:\\Users\\kk\\AppData\\Local\\FocusModern\\Logs/**)"
+      "Read(C:\\Users\\kk\\AppData\\Local\\FocusModern\\Logs/**)",
+      "Bash(.TestDbfReader.exe:*)",
+      "Bash(dotnet run:*)",
+      "Bash(dotnet publish:*)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []
