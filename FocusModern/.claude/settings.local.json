@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dotnet run:*)",
+      "Bash(mono:*)",
+      "Bash(msbuild:*)",
+      "Bash(FocusModern/bin/Debug/FocusModern.exe)",
+      "Bash(sudo apt:*)",
+      "Bash(sudo apt install:*)",
+      "Bash(node:*)",
+      "Bash(npm --version)",
+      "Bash(npm install:*)",
+      "Bash(npm search:*)",
+      "Bash(context7-mcp:*)",
+      "Bash(sequential-thinking-mcp:*)",
+      "Bash(timeout:*)",
+      "Bash(mcp-server-filesystem:*)",
+      "Bash(grep:*)",
+      "Bash(dotnet build)",
+      "Read(/usr/bin/**)",
+      "Bash(find:*)",
+      "Bash(memory-bank-mcp:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

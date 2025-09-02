@@ -1,0 +1,62 @@
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build outputs
+bin/
+obj/
+**/Debug/
+**/Release/
+*.pdb
+*.cache
+*.log
+
+# .NET
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# NuGet
+*.nupkg
+packages/
+**/packages/*
+!**/packages/build/
+*.snupkg
+
+# ReSharper/JetBrains
+_ReSharper*/
+*.DotSettings.user
+
+# Rider
+.idea/
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# VS Code
+.vscode/**
+!.vscode/*.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# SQLite runtime native bins (restored via NuGet)
+**/runtimes/**/SQLite.Interop.dll
+
+# Old legacy data (large/sensitive)
+Old/
+
+# Build artifacts and intermediates
+**/*.deps.json
+**/*.runtimeconfig.json
+**/*.dll.config
+
+# Misc
+*.bak
+*.tmp
+*.DS_Store
