@@ -217,8 +217,18 @@ namespace FocusModern.Forms
 
         private void btnReports_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Reports will be implemented next", "Coming Soon", 
-                MessageBoxButtons.OK, MessageBoxIcon.Information);
+            try
+            {
+                using (var reports = new ReportsForm(currentBranch))
+                {
+                    reports.ShowDialog();
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Error opening reports: {ex.Message}", ex);
+                MessageBox.Show($"Error opening reports: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void btnSwitchBranch_Click(object sender, EventArgs e)

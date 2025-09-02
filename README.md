@@ -43,7 +43,8 @@ dotnet run
 - Loans: Implemented create/edit and details; list wired; Make Payment integrated to entry.
 - Payments: Implemented entry and details (with cancel/reversal), list with search and working date range picker; vouchers use per-branch sequence; day-book transaction created on payment/cancel.
 - Day Book: Implemented viewer (date range + search). Temporarily bound to F6.
-- Reports/Backup/Settings: Not implemented.
+- Reports: Implemented basic UI (daily payments, monthly collection, loan statement) with CSV export; print/PDF pending.
+- Backup/Settings: Not implemented.
 - Migration tooling: Not implemented.
 
 ### Remaining Work
