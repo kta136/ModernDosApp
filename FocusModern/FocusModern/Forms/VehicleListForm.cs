@@ -40,6 +40,8 @@ namespace FocusModern.Forms
                 // Load all vehicles
                 LoadVehicles();
 
+                Theme.Apply(this);
+
                 Logger.Info($"Vehicle list form initialized for Branch {currentBranch}");
             }
             catch (Exception ex)

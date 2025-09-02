@@ -45,6 +45,7 @@ namespace FocusModern.Forms
 
             InitializeComponent();
             LoadLoans(preselectedLoanId);
+            Theme.Apply(this);
         }
 
         private void InitializeComponent()

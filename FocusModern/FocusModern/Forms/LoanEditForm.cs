@@ -63,6 +63,7 @@ namespace FocusModern.Forms
             LoadDropdowns();
             PopulateFormIfEditing();
             RecalculateDerived();
+            Theme.Apply(this);
         }
 
         private void InitializeComponent()

@@ -31,6 +31,9 @@ namespace FocusModern.Forms
                 // Update branch button states based on database availability
                 UpdateBranchButtonStates();
                 
+                // Apply theme after controls are created
+                Theme.Apply(this);
+
                 Logger.Info("Branch selection form initialized");
             }
             catch (Exception ex)

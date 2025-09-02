@@ -33,7 +33,9 @@ namespace FocusModern.Forms
                 InitializeDatabaseAndServices();
                 SetupForm();
                 LoadLoans();
-                
+
+                Theme.Apply(this);
+
                 Logger.Info($"Loan list form initialized for Branch {branchId}");
             }
             catch (Exception ex)

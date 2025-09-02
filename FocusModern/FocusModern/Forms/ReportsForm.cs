@@ -35,6 +35,8 @@ namespace FocusModern.Forms
         private DateTimePicker dtDaily;
         private Button btnDailyGenerate;
         private Button btnDailyExport;
+        private Button btnDailyPrint;
+        private Button btnDailyPdf;
         private Label lblDailySummary;
         private DataGridView dgvDaily;
 
@@ -43,6 +45,8 @@ namespace FocusModern.Forms
         private ComboBox cmbMonth;
         private Button btnMonthlyGenerate;
         private Button btnMonthlyExport;
+        private Button btnMonthlyPrint;
+        private Button btnMonthlyPdf;
         private Label lblMonthlySummary;
         private DataGridView dgvMonthly;
 
@@ -50,6 +54,8 @@ namespace FocusModern.Forms
         private ComboBox cmbLoan;
         private Button btnLoanGenerate;
         private Button btnLoanExport;
+        private Button btnLoanPrint;
+        private Button btnLoanPdf;
         private Label lblLoanSummary;
         private DataGridView dgvLoanPayments;
 
@@ -59,6 +65,7 @@ namespace FocusModern.Forms
             InitializeComponent();
             InitializeServices();
             LoadLoanDropdown();
+            Theme.Apply(this);
         }
 
         private void InitializeComponent()
@@ -77,7 +84,9 @@ namespace FocusModern.Forms
             // Daily tab UI
             dtDaily = new DateTimePicker { Format = DateTimePickerFormat.Short, Location = new Point(20, 20), Width = 140 };
             btnDailyGenerate = new Button { Text = "Generate", Location = new Point(180, 18), Width = 90 };
-            btnDailyExport = new Button { Text = "Export CSV", Location = new Point(280, 18), Width = 100 };
+            btnDailyExport = new Button { Text = "CSV", Location = new Point(280, 18), Width = 60 };
+            btnDailyPrint = new Button { Text = "Print", Location = new Point(345, 18), Width = 60 };
+            btnDailyPdf = new Button { Text = "PDF", Location = new Point(410, 18), Width = 60 };
             lblDailySummary = new Label { Location = new Point(400, 22), AutoSize = true };
             dgvDaily = new DataGridView { Location = new Point(20, 60), Size = new Size(1030, 560), ReadOnly = true, AllowUserToAddRows = false, AllowUserToDeleteRows = false, SelectionMode = DataGridViewSelectionMode.FullRowSelect, AutoGenerateColumns = false, Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right };
             dgvDaily.Columns.Add(new DataGridViewTextBoxColumn { Name = "PaymentNumber", HeaderText = "Payment No.", DataPropertyName = "PaymentNumber", Width = 140 });
@@ -88,7 +97,9 @@ namespace FocusModern.Forms
             dgvDaily.Columns.Add(new DataGridViewTextBoxColumn { Name = "Breakdown", HeaderText = "Breakdown", DataPropertyName = "PaymentBreakdown", Width = 280 });
             btnDailyGenerate.Click += (s, e) => GenerateDaily();
             btnDailyExport.Click += (s, e) => ExportGridToCsv(dgvDaily, $"daily_{dtDaily.Value:yyyyMMdd}.csv");
-            tpDaily.Controls.AddRange(new Control[] { dtDaily, btnDailyGenerate, btnDailyExport, lblDailySummary, dgvDaily });
+            btnDailyPrint.Click += (s, e) => new Utilities.ReportPrinter(dgvDaily, "Daily Payments", $"Date: {dtDaily.Value:dd/MM/yyyy}").ShowPreview(this);
+            btnDailyPdf.Click += (s, e) => new Utilities.ReportPrinter(dgvDaily, "Daily Payments", $"Date: {dtDaily.Value:dd/MM/yyyy}").ExportPdf(this);
+            tpDaily.Controls.AddRange(new Control[] { dtDaily, btnDailyGenerate, btnDailyExport, btnDailyPrint, btnDailyPdf, lblDailySummary, dgvDaily });
 
             // Monthly tab UI
             numYear = new NumericUpDown { Location = new Point(20, 20), Minimum = 2000, Maximum = 2100, Value = DateTime.Now.Year, Width = 100 };
@@ -96,20 +107,26 @@ namespace FocusModern.Forms
             cmbMonth.Items.AddRange(System.Globalization.DateTimeFormatInfo.CurrentInfo.MonthNames.Take(12).ToArray());
             cmbMonth.SelectedIndex = DateTime.Now.Month - 1;
             btnMonthlyGenerate = new Button { Text = "Generate", Location = new Point(290, 18), Width = 90 };
-            btnMonthlyExport = new Button { Text = "Export CSV", Location = new Point(390, 18), Width = 100 };
-            lblMonthlySummary = new Label { Location = new Point(510, 22), AutoSize = true };
+            btnMonthlyExport = new Button { Text = "CSV", Location = new Point(390, 18), Width = 60 };
+            btnMonthlyPrint = new Button { Text = "Print", Location = new Point(455, 18), Width = 60 };
+            btnMonthlyPdf = new Button { Text = "PDF", Location = new Point(520, 18), Width = 60 };
+            lblMonthlySummary = new Label { Location = new Point(600, 22), AutoSize = true };
             dgvMonthly = new DataGridView { Location = new Point(20, 60), Size = new Size(1030, 560), ReadOnly = true, AllowUserToAddRows = false, AllowUserToDeleteRows = false, SelectionMode = DataGridViewSelectionMode.FullRowSelect, AutoGenerateColumns = false, Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right };
             dgvMonthly.Columns.Add(new DataGridViewTextBoxColumn { Name = "Date", HeaderText = "Date", DataPropertyName = "Date", Width = 140 });
             dgvMonthly.Columns.Add(new DataGridViewTextBoxColumn { Name = "Amount", HeaderText = "Amount", DataPropertyName = "Amount", Width = 160 });
             btnMonthlyGenerate.Click += (s, e) => GenerateMonthly();
             btnMonthlyExport.Click += (s, e) => ExportGridToCsv(dgvMonthly, $"monthly_{numYear.Value}_{cmbMonth.SelectedIndex + 1:D2}.csv");
-            tpMonthly.Controls.AddRange(new Control[] { numYear, cmbMonth, btnMonthlyGenerate, btnMonthlyExport, lblMonthlySummary, dgvMonthly });
+            btnMonthlyPrint.Click += (s, e) => new Utilities.ReportPrinter(dgvMonthly, "Monthly Collection", $"{cmbMonth.SelectedItem} {numYear.Value}").ShowPreview(this);
+            btnMonthlyPdf.Click += (s, e) => new Utilities.ReportPrinter(dgvMonthly, "Monthly Collection", $"{cmbMonth.SelectedItem} {numYear.Value}").ExportPdf(this);
+            tpMonthly.Controls.AddRange(new Control[] { numYear, cmbMonth, btnMonthlyGenerate, btnMonthlyExport, btnMonthlyPrint, btnMonthlyPdf, lblMonthlySummary, dgvMonthly });
 
             // Loan Statement tab UI
             cmbLoan = new ComboBox { Location = new Point(20, 18), Width = 350, DropDownStyle = ComboBoxStyle.DropDownList };
             btnLoanGenerate = new Button { Text = "Generate", Location = new Point(380, 18), Width = 90 };
-            btnLoanExport = new Button { Text = "Export CSV", Location = new Point(480, 18), Width = 100 };
-            lblLoanSummary = new Label { Location = new Point(600, 22), AutoSize = true };
+            btnLoanExport = new Button { Text = "CSV", Location = new Point(480, 18), Width = 60 };
+            btnLoanPrint = new Button { Text = "Print", Location = new Point(545, 18), Width = 60 };
+            btnLoanPdf = new Button { Text = "PDF", Location = new Point(610, 18), Width = 60 };
+            lblLoanSummary = new Label { Location = new Point(690, 22), AutoSize = true };
             dgvLoanPayments = new DataGridView { Location = new Point(20, 60), Size = new Size(1030, 560), ReadOnly = true, AllowUserToAddRows = false, AllowUserToDeleteRows = false, SelectionMode = DataGridViewSelectionMode.FullRowSelect, AutoGenerateColumns = false, Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right };
             dgvLoanPayments.Columns.Add(new DataGridViewTextBoxColumn { Name = "Date", HeaderText = "Date", DataPropertyName = "PaymentDate", Width = 110, DefaultCellStyle = new DataGridViewCellStyle { Format = "dd/MM/yyyy" } });
             dgvLoanPayments.Columns.Add(new DataGridViewTextBoxColumn { Name = "Number", HeaderText = "Number", DataPropertyName = "PaymentNumber", Width = 140 });
@@ -118,7 +135,9 @@ namespace FocusModern.Forms
             dgvLoanPayments.Columns.Add(new DataGridViewTextBoxColumn { Name = "Method", HeaderText = "Method", DataPropertyName = "PaymentMethod", Width = 120 });
             btnLoanGenerate.Click += (s, e) => GenerateLoanStatement();
             btnLoanExport.Click += (s, e) => ExportGridToCsv(dgvLoanPayments, $"loan_statement_{(cmbLoan.SelectedItem as LoanItem)?.Loan?.LoanNumber}.csv");
-            tpLoan.Controls.AddRange(new Control[] { cmbLoan, btnLoanGenerate, btnLoanExport, lblLoanSummary, dgvLoanPayments });
+            btnLoanPrint.Click += (s, e) => new Utilities.ReportPrinter(dgvLoanPayments, "Loan Statement", (cmbLoan.SelectedItem as LoanItem)?.Loan?.LoanNumber ?? string.Empty).ShowPreview(this);
+            btnLoanPdf.Click += (s, e) => new Utilities.ReportPrinter(dgvLoanPayments, "Loan Statement", (cmbLoan.SelectedItem as LoanItem)?.Loan?.LoanNumber ?? string.Empty).ExportPdf(this);
+            tpLoan.Controls.AddRange(new Control[] { cmbLoan, btnLoanGenerate, btnLoanExport, btnLoanPrint, btnLoanPdf, lblLoanSummary, dgvLoanPayments });
 
             tabs.TabPages.Add(tpDaily);
             tabs.TabPages.Add(tpMonthly);

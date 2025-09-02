@@ -28,6 +28,7 @@ namespace FocusModern.Forms
             transactionRepository = transactionRepo;
             InitializeComponent();
             LoadData();
+            Theme.Apply(this);
         }
 
         private void InitializeComponent()

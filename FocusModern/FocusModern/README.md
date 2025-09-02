@@ -77,10 +77,10 @@
 - Loans: Implemented create/edit and details; list wired; Make Payment integrated to entry.
 - Payments: Implemented entry and details (with cancellation via reversal); vouchers use per-branch sequence; day-book transaction created on payment/cancel; list supports search and date range.
 - Day Book: Implemented viewer (date range + search). Temporarily bound to F6.
-- Reports: Implemented basic UI (daily payments, monthly collection, loan statement) with CSV export; print/PDF pending.
+ - Reports: Implemented basic UI (daily payments, monthly collection, loan statement) with CSV export and Print/PDF (via Microsoft Print to PDF).
 - Backup/Settings: Not implemented.
 
 ### Remaining Work
- - Add print/PDF export to reports and polish visuals (headers, totals, print preview).
+ - Polish report visuals/layouts; add branding to printouts.
  - Implement Backup/Restore and a Settings dialog for paths/log level/company.
  - Prepare a migration utility for legacy `Old/{1,2,3}` data files.

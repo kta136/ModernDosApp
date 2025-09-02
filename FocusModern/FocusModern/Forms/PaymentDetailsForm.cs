@@ -36,6 +36,7 @@ namespace FocusModern.Forms
             this.paymentService = service ?? throw new ArgumentNullException(nameof(service));
             InitializeComponent();
             LoadPayment();
+            Theme.Apply(this);
         }
 
         private void InitializeComponent()

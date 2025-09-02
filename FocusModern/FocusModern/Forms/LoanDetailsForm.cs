@@ -37,6 +37,7 @@ namespace FocusModern.Forms
             this.paymentRepository = paymentRepository ?? throw new ArgumentNullException(nameof(paymentRepository));
             InitializeComponent();
             LoadDetails();
+            Theme.Apply(this);
         }
 
         private void InitializeComponent()

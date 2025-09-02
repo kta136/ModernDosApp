@@ -84,6 +84,8 @@ namespace FocusModern.Forms
 
             // Setup data grid columns
             SetupDataGridColumns();
+
+            Theme.Apply(this);
         }
 
         private void SetupDataGridColumns()

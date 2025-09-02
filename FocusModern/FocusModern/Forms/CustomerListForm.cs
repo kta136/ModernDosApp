@@ -40,6 +40,8 @@ namespace FocusModern.Forms
                 // Load all customers
                 LoadCustomers();
 
+                Theme.Apply(this);
+
                 Logger.Info($"Customer list form initialized for Branch {currentBranch}");
             }
             catch (Exception ex)

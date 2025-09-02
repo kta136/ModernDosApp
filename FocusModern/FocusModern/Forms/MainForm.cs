@@ -50,6 +50,9 @@ namespace FocusModern.Forms
                 // Load dashboard data
                 LoadDashboardData();
 
+                // Apply modern theme
+                Theme.Apply(this);
+
                 Logger.Info(string.Format("Main form initialized for Branch {0}", currentBranch));
             }
             catch (Exception ex)
