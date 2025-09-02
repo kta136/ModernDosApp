@@ -44,14 +44,13 @@ dotnet run
 - Payments: Implemented entry and details (with cancel/reversal), list with search and working date range picker; vouchers use per-branch sequence; day-book transaction created on payment/cancel.
 - Day Book: Implemented viewer (date range + search). Temporarily bound to F6.
 - Reports: Implemented basic UI (daily payments, monthly collection, loan statement) with CSV export; print/PDF pending.
- - Reports: Implemented basic UI (daily payments, monthly collection, loan statement) with CSV export and Print/PDF (via Microsoft Print to PDF).
+- Reports: Implemented basic UI (daily payments, monthly collection, loan statement) with CSV export and Print/PDF (via Microsoft Print to PDF).
 - Backup/Settings: Not implemented.
+ - Backup/Settings: Implemented basic Backup/Restore (ZIP) and Settings dialog.
 - Migration tooling: Not implemented.
 
 ### Remaining Work
 - Reports: polish visuals and layouts; add branding to printouts.
-- Backup/Restore UI and logic.
-- Settings dialog (paths, log level, company info) with persistence.
 - Legacy data migration tool for `Old/{1,2,3}` (.FIL/.NTX) per branch.
 
 ---

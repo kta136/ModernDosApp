@@ -278,14 +278,38 @@ namespace FocusModern.Forms
 
         private void btnBackup_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Backup functionality will be implemented next", "Coming Soon", 
-                MessageBoxButtons.OK, MessageBoxIcon.Information);
+            try
+            {
+                using (var backup = new BackupForm(currentBranch))
+                {
+                    backup.ShowDialog();
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Error opening backup: {ex.Message}", ex);
+                MessageBox.Show($"Error opening backup: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void btnSettings_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Settings will be implemented next", "Coming Soon", 
-                MessageBoxButtons.OK, MessageBoxIcon.Information);
+            try
+            {
+                using (var settings = new SettingsForm())
+                {
+                    if (settings.ShowDialog() == DialogResult.OK)
+                    {
+                        // After settings change, we may need to refresh database paths/colors etc.
+                        LoadDashboardData();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Error opening settings: {ex.Message}", ex);
+                MessageBox.Show($"Error opening settings: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void btnRefresh_Click(object sender, EventArgs e)
