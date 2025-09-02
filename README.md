@@ -36,9 +36,22 @@ dotnet run
 - `FocusModern/Docs/MODERNIZATION_PROJECT_PLAN.md` – phased plan
 
 ## Next Steps
-- Implement migration utility for `Old/{1,2,3}` `.FIL/.NTX`
-- Build vehicle management and payment processing
-- Recreate A4 reports (Recovery, Day Book, Statements)
+ 
+### Current Status
+- Customers: Implemented (CRUD forms, validation, search).
+- Vehicles: Implemented (list/edit forms, validation, statistics).
+- Loans: Implemented create/edit and details; list wired; Make Payment integrated to entry.
+- Payments: Implemented entry and details (with cancel/reversal), list with search and working date range picker; vouchers use per-branch sequence; day-book transaction created on payment/cancel.
+- Reports/Backup/Settings: Not implemented.
+- Migration tooling: Not implemented.
+
+### Remaining Work
+- Day Book (transactions) viewer UI with date range + search.
+- Day Book (transactions) viewer UI with date range + search.
+- Reports UI: daily collections, monthly summary, loan statement; add print/PDF export.
+- Backup/Restore UI and logic.
+- Settings dialog (paths, log level, company info) with persistence.
+- Legacy data migration tool for `Old/{1,2,3}` (.FIL/.NTX) per branch.
 
 ---
 GitHub: https://github.com/kta136/ModernDosApp

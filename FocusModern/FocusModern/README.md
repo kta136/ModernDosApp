@@ -30,7 +30,7 @@
 - **Branch Selection**: Choose between 3 branches (each with separate database)
 - **Customer Management**: Add, view, and manage customer information
 - **Vehicle Tracking**: Vehicle registration and details
-- **Payment Processing**: Record and track payments
+- **Payment Processing**: New entry and details (with cancel/reversal), searchable list, date range picker
 - **Dashboard**: Summary view of branch activities
 - **SQLite Database**: Automatic database creation and management
 
@@ -68,3 +68,18 @@
 
 ---
 *Project successfully debugged and ready for Windows deployment!*
+
+## Status and Remaining Work
+
+### Current Status
+- Customers: Implemented (CRUD, validation, search, list/edit forms).
+- Vehicles: Implemented (list/edit forms, validation, stats on dashboard).
+- Loans: Implemented create/edit and details; list wired; Make Payment integrated to entry.
+- Payments: Implemented entry and details (with cancellation via reversal); vouchers use per-branch sequence; day-book transaction created on payment/cancel; list supports search and date range.
+- Reports/Backup/Settings: Not implemented.
+
+### Remaining Work
+- Add a Day Book (transactions) viewer UI with date range + search.
+- Build Reports UI (daily collection, monthly summary, loan statement) with print/PDF export.
+- Implement Backup/Restore and a Settings dialog for paths/log level/company.
+- Prepare a migration utility for legacy `Old/{1,2,3}` data files.

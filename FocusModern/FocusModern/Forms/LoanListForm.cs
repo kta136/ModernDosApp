@@ -60,7 +60,14 @@ namespace FocusModern.Forms
             transactionRepository = new TransactionRepository(databaseManager, branchId);
             
             // Initialize services
-            loanService = new LoanService(loanRepository, paymentRepository, customerRepository, vehicleRepository);
+            loanService = new LoanService(
+                loanRepository,
+                paymentRepository,
+                customerRepository,
+                vehicleRepository,
+                transactionRepository,
+                databaseManager,
+                branchId);
             paymentService = new PaymentService(paymentRepository, loanRepository, customerRepository, vehicleRepository, transactionRepository);
         }
 
@@ -203,8 +210,27 @@ namespace FocusModern.Forms
 
         private void btnNewLoan_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("New Loan form will be implemented next", "Coming Soon", 
-                MessageBoxButtons.OK, MessageBoxIcon.Information);
+            try
+            {
+                using (var form = new LoanEditForm(
+                    loanService,
+                    loanRepository,
+                    customerRepository,
+                    vehicleRepository,
+                    branchId))
+                {
+                    if (form.ShowDialog() == DialogResult.OK)
+                    {
+                        LoadLoans();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Error opening new loan form: {ex.Message}", ex);
+                MessageBox.Show($"Error opening new loan form: {ex.Message}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void btnViewLoan_Click(object sender, EventArgs e)
@@ -215,22 +241,60 @@ namespace FocusModern.Forms
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-
-            MessageBox.Show("Loan Details form will be implemented next", "Coming Soon", 
-                MessageBoxButtons.OK, MessageBoxIcon.Information);
+            try
+            {
+                var loan = dgvLoans.SelectedRows[0].DataBoundItem as Loan;
+                if (loan == null)
+                {
+                    MessageBox.Show("Could not resolve selected loan.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+                using (var form = new LoanDetailsForm(loan.Id, loanService, paymentRepository))
+                {
+                    form.ShowDialog();
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Error opening loan details: {ex.Message}", ex);
+                MessageBox.Show($"Error opening loan details: {ex.Message}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void btnMakePayment_Click(object sender, EventArgs e)
         {
-            if (dgvLoans.SelectedRows.Count == 0)
+            try
             {
-                MessageBox.Show("Please select a loan to make payment.", "No Selection", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
+                if (dgvLoans.SelectedRows.Count == 0)
+                {
+                    MessageBox.Show("Please select a loan to make payment.", "No Selection",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
 
-            MessageBox.Show("Payment Entry form will be implemented next", "Coming Soon", 
-                MessageBoxButtons.OK, MessageBoxIcon.Information);
+                var selected = dgvLoans.SelectedRows[0].DataBoundItem as Loan;
+                int? loanId = selected?.Id;
+
+                using (var entry = new PaymentEntryForm(
+                    loanService,
+                    loanRepository,
+                    customerRepository,
+                    vehicleRepository,
+                    loanId))
+                {
+                    if (entry.ShowDialog() == DialogResult.OK)
+                    {
+                        LoadLoans();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Error opening payment entry from loan list: {ex.Message}", ex);
+                MessageBox.Show($"Error opening payment entry: {ex.Message}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void btnSearch_Click(object sender, EventArgs e)

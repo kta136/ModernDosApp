@@ -271,6 +271,18 @@ namespace FocusModern.Services
                 var result = paymentRepository.Insert(reversal);
                 if (result)
                 {
+                    // Try to create corresponding day-book transaction
+                    try
+                    {
+                        reversal.Customer = customerRepository.GetById(reversal.CustomerId);
+                        reversal.Vehicle = vehicleRepository.GetById(reversal.VehicleId);
+                        CreatePaymentTransaction(reversal);
+                    }
+                    catch (Exception tex)
+                    {
+                        Logger.Error($"Error creating reversal transaction: {tex.Message}");
+                    }
+
                     Logger.Info($"Payment cancelled: {payment.PaymentNumber} - Reason: {reason}");
                 }
 

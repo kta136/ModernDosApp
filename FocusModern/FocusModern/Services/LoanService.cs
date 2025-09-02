@@ -13,6 +13,9 @@ namespace FocusModern.Services
         private readonly PaymentRepository paymentRepository;
         private readonly CustomerRepository customerRepository;
         private readonly VehicleRepository vehicleRepository;
+        private readonly TransactionRepository transactionRepository;
+        private readonly Data.DatabaseManager dbManager;
+        private readonly int branchId;
 
         public LoanService(
             LoanRepository loanRepo, 
@@ -24,6 +27,28 @@ namespace FocusModern.Services
             paymentRepository = paymentRepo;
             customerRepository = customerRepo;
             vehicleRepository = vehicleRepo;
+            transactionRepository = null;
+            dbManager = null;
+            branchId = 0;
+        }
+
+        // Overload that enables voucher sequencing and transactions
+        public LoanService(
+            LoanRepository loanRepo,
+            PaymentRepository paymentRepo,
+            CustomerRepository customerRepo,
+            VehicleRepository vehicleRepo,
+            TransactionRepository txnRepo,
+            Data.DatabaseManager databaseManager,
+            int branchNumber)
+        {
+            loanRepository = loanRepo;
+            paymentRepository = paymentRepo;
+            customerRepository = customerRepo;
+            vehicleRepository = vehicleRepo;
+            transactionRepository = txnRepo;
+            dbManager = databaseManager;
+            branchId = branchNumber;
         }
 
         /// <summary>
@@ -111,6 +136,24 @@ namespace FocusModern.Services
                 {
                     // Update loan balances
                     UpdateLoanAfterPayment(loan, payment);
+                    
+                    // Populate related entities for transaction display
+                    try
+                    {
+                        payment.Customer = customerRepository.GetById(loan.CustomerId);
+                        payment.Vehicle = vehicleRepository.GetById(loan.VehicleId);
+                    }
+                    catch {}
+
+                    // Create day-book transaction if repository available
+                    try
+                    {
+                        transactionRepository?.Create(payment.ToTransaction());
+                    }
+                    catch (Exception tex)
+                    {
+                        Logger.Error($"Error creating transaction for payment: {tex.Message}");
+                    }
                     
                     Logger.Info($"Payment processed: {payment.PaymentNumber} for loan {loan.LoanNumber}");
                     return true;
@@ -428,8 +471,52 @@ namespace FocusModern.Services
 
         private int GetNextVoucherNumber()
         {
-            // This should ideally come from the DatabaseManager voucher sequence
+            try
+            {
+                if (dbManager != null && branchId > 0)
+                {
+                    return dbManager.GetNextVoucherNumber(branchId);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Error getting next voucher number from DB: {ex.Message}");
+            }
+            // Fallback if dbManager not provided
             return (int)(DateTime.Now.Ticks % 100000);
+        }
+
+        /// <summary>
+        /// Update an existing loan with validation
+        /// </summary>
+        public bool UpdateLoan(Loan loan)
+        {
+            try
+            {
+                if (loan == null) return false;
+
+                if (!ValidateLoanData(loan))
+                    return false;
+
+                // Recompute derived fields
+                loan.CalculateEMI();
+                loan.CalculateMaturityDate();
+                loan.CalculateBalance();
+
+                var result = loanRepository.Update(loan);
+                if (result)
+                {
+                    // Keep vehicle amounts in sync
+                    UpdateVehicleLoanStatus(loan);
+                    Logger.Info($"Loan updated successfully: {loan.LoanNumber}");
+                }
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Error updating loan: {ex.Message}");
+                return false;
+            }
         }
 
         private int GetNextLoanSequence()

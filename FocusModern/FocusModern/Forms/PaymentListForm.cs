@@ -60,7 +60,14 @@ namespace FocusModern.Forms
             transactionRepository = new TransactionRepository(databaseManager, branchId);
             
             // Initialize services
-            loanService = new LoanService(loanRepository, paymentRepository, customerRepository, vehicleRepository);
+            loanService = new LoanService(
+                loanRepository,
+                paymentRepository,
+                customerRepository,
+                vehicleRepository,
+                transactionRepository,
+                databaseManager,
+                branchId);
             paymentService = new PaymentService(paymentRepository, loanRepository, customerRepository, vehicleRepository, transactionRepository);
         }
 
@@ -206,21 +213,62 @@ namespace FocusModern.Forms
 
         private void btnNewPayment_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("New Payment form will be implemented next", "Coming Soon", 
-                MessageBoxButtons.OK, MessageBoxIcon.Information);
+            try
+            {
+                using (var entry = new PaymentEntryForm(
+                    loanService,
+                    loanRepository,
+                    customerRepository,
+                    vehicleRepository))
+                {
+                    if (entry.ShowDialog() == DialogResult.OK)
+                    {
+                        LoadPayments();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Error opening payment entry: {ex.Message}", ex);
+                MessageBox.Show($"Error opening payment entry: {ex.Message}",
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void btnViewPayment_Click(object sender, EventArgs e)
         {
-            if (dgvPayments.SelectedRows.Count == 0)
+            try
             {
-                MessageBox.Show("Please select a payment to view.", "No Selection", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
+                if (dgvPayments.SelectedRows.Count == 0)
+                {
+                    MessageBox.Show("Please select a payment to view.", "No Selection",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
 
-            MessageBox.Show("Payment Details form will be implemented next", "Coming Soon", 
-                MessageBoxButtons.OK, MessageBoxIcon.Information);
+                var payment = dgvPayments.SelectedRows[0].DataBoundItem as Payment;
+                if (payment == null)
+                {
+                    MessageBox.Show("Could not resolve selected payment.", "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                using (var details = new PaymentDetailsForm(payment.Id, paymentService))
+                {
+                    if (details.ShowDialog() == DialogResult.OK)
+                    {
+                        // Payment may have been cancelled; refresh list
+                        LoadPayments();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Error opening payment details: {ex.Message}", ex);
+                MessageBox.Show($"Error opening payment details: {ex.Message}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void btnSearch_Click(object sender, EventArgs e)
@@ -326,8 +374,9 @@ namespace FocusModern.Forms
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Date range selection will be available soon. Currently showing this month's payments.", 
-                    "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                Logger.Error($"Error in date range selection: {ex.Message}", ex);
+                MessageBox.Show($"Error selecting date range: {ex.Message}", 
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -376,16 +425,56 @@ namespace FocusModern.Forms
         }
     }
 
-    // Simple placeholder for date range selection form
+    // Simple working date range selection form
     public class DateRangeSelectionForm : Form
     {
-        public DateTime FromDate { get; set; } = DateTime.Today.AddDays(-30);
-        public DateTime ToDate { get; set; } = DateTime.Today;
-        
+        public DateTime FromDate { get; private set; } = DateTime.Today.AddDays(-30);
+        public DateTime ToDate { get; private set; } = DateTime.Today;
+
+        private readonly DateTimePicker dtFrom;
+        private readonly DateTimePicker dtTo;
+        private readonly Button btnOk;
+        private readonly Button btnCancel;
+
         public DateRangeSelectionForm()
         {
-            // This would be a proper date selection form
-            this.DialogResult = DialogResult.Cancel;
+            this.Text = "Select Date Range";
+            this.StartPosition = FormStartPosition.CenterParent;
+            this.FormBorderStyle = FormBorderStyle.FixedDialog;
+            this.MinimizeBox = false;
+            this.MaximizeBox = false;
+            this.ClientSize = new System.Drawing.Size(360, 150);
+
+            var lblFrom = new Label { Text = "From:", AutoSize = true, Location = new System.Drawing.Point(20, 20) };
+            var lblTo = new Label { Text = "To:", AutoSize = true, Location = new System.Drawing.Point(20, 60) };
+
+            dtFrom = new DateTimePicker { Format = DateTimePickerFormat.Short, Location = new System.Drawing.Point(80, 16), Width = 240 };
+            dtTo = new DateTimePicker { Format = DateTimePickerFormat.Short, Location = new System.Drawing.Point(80, 56), Width = 240 };
+            dtFrom.Value = FromDate;
+            dtTo.Value = ToDate;
+
+            btnOk = new Button { Text = "OK", DialogResult = DialogResult.None, Location = new System.Drawing.Point(160, 100), Width = 75 };
+            btnCancel = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel, Location = new System.Drawing.Point(245, 100), Width = 75 };
+
+            btnOk.Click += (s, e) =>
+            {
+                if (dtFrom.Value.Date > dtTo.Value.Date)
+                {
+                    MessageBox.Show("From date cannot be after To date.", "Invalid Range", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+                FromDate = dtFrom.Value.Date;
+                ToDate = dtTo.Value.Date;
+                this.DialogResult = DialogResult.OK;
+                this.Close();
+            };
+
+            this.Controls.Add(lblFrom);
+            this.Controls.Add(lblTo);
+            this.Controls.Add(dtFrom);
+            this.Controls.Add(dtTo);
+            this.Controls.Add(btnOk);
+            this.Controls.Add(btnCancel);
         }
     }
 }

@@ -197,8 +197,21 @@ namespace FocusModern.Forms
 
         private void btnPayments_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Payment recording will be implemented next", "Coming Soon", 
-                MessageBoxButtons.OK, MessageBoxIcon.Information);
+            try
+            {
+                using (var paymentsForm = new PaymentListForm(currentBranch))
+                {
+                    paymentsForm.ShowDialog();
+                    // Refresh dashboard data after payments form closes
+                    LoadDashboardData();
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Error opening payment management for Branch {currentBranch}", ex);
+                MessageBox.Show($"Error opening payment management: {ex.Message}",
+                    "FOCUS Modern Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void btnReports_Click(object sender, EventArgs e)
